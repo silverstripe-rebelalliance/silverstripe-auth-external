@@ -1,8 +1,8 @@
 {
 	"name": "silverstripe-rebelalliance/auth-external",
-	"description": "Experimental version of fulltextsearch which adds a suggestor feature",
+	"description": "External authentication for LDAP, FTP,IMAP and HTTPBASIC",
 	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "sphinx", "solr", "fulltext"],
+	"keywords": ["silverstripe", "authentication", "LDAP", "FTP", "IMAP", "HTTPBASIC", "SSL", 'TLS"],
 	"authors": [
 		{
 			"name": "Roel Gloudmans",
