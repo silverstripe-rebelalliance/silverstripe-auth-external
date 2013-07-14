@@ -1,0 +1,16 @@
+{
+	"name": "silverstripe-rebelalliance/auth-external",
+	"description": "Experimental version of fulltextsearch which adds a suggestor feature",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "sphinx", "solr", "fulltext"],
+	"authors": [
+		{
+			"name": "Roel Gloudmans",
+			"email": "roel@gloudmns.info"
+		}
+	],
+	"require":
+	{
+		"silverstripe/framework": "3.0.*"
+	}
+}
