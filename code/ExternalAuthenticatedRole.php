@@ -15,26 +15,19 @@
  */
 class ExternalAuthenticatedRole extends DataExtension {
 
-    /**
-     * Define extra database fields
-     *
-     * Returns a map where the keys are db, has_one, etc, and the values are
-     * additional fields/relations to be defined
-     *
-     * @return array Returns a map where the keys are db, has_one, etc, and
-     *               the values are additional fields/relations to be defined
-     */
-    function extraStatics($class = null, $extension = null) {
-        return array(
-            'db' => array('External_Anchor' => 'Varchar(255)', 
-                          'External_SourceID' => 'Varchar(50)'),
-            'has_one' => array(),
-            'defaults' => array('External_Anchor' => null,
-                                'External_SourceID' => null),
-            'indexes' => array('External_Anchor' => true)
-        );
-    }
+    private static $db = array(
+        'External_Anchor' => 'Varchar(255)', 
+        'External_SourceID' => 'Varchar(50)'
+    );
 
+    private static $defaults = array(
+         'External_Anchor' => null,
+         'External_SourceID' => null
+    );
+
+    private static $indexes = array(
+          'External_Anchor' => true
+    );
 
     /**
      * Edit the given query object to support queries for this extension
