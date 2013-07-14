@@ -2,7 +2,7 @@
 	"name": "silverstripe-rebelalliance/auth-external",
 	"description": "External authentication for LDAP, FTP,IMAP and HTTPBASIC",
 	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "authentication", "LDAP", "FTP", "IMAP", "HTTPBASIC", "SSL", 'TLS"],
+	"keywords": ["silverstripe", "authentication", "LDAP", "FTP", "IMAP", "HTTPBASIC", "SSL", "TLS"],
 	"authors": [
 		{
 			"name": "Roel Gloudmans",
