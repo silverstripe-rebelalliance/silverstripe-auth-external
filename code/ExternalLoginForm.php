@@ -69,7 +69,7 @@ class ExternalLoginForm extends LoginForm {
                     );
                 }
                 
-                if(Security::$autologin_enabled) {
+                if(Config::inst()->get('Security', 'autologin_enabled')) {
                     $fields->push(new CheckboxField(
                         "Remember", 
                         _t('ExternalAuthenticator.Remember','Remember me next time?'),
