@@ -48,7 +48,7 @@ class LDAP_Authenticator {
      * @param string $external_anchor The ID entered by the user (for logging purposes only)
      * @return boolean on success, error message on fail.
      */
-    private function Connect($source, $external_anchor) {
+    public function Connect($source, $external_anchor) {
         // First we verify the setting and adapt where needed
         $uri = ExternalAuthenticator::getAuthServer($source);
         $enc = ExternalAuthenticator::getAuthEnc($source);

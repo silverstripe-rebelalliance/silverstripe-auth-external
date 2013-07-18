@@ -107,7 +107,8 @@ class ExternalAuthenticator extends Authenticator {
        $keys   = array_keys(self::$authsources);
        
        foreach ($keys as $sourceid) {
-           $result[$sourceid] = self::$authsources["$sourceid"]['nicename'];
+           $result[$sourceid] = (isset(self::$authsources["$sourceid"]) && isset(self::$authsources["$sourceid"]['nicename']))
+		? self::$authsources["$sourceid"]['nicename'] : '';
        }
   
        return $result;
@@ -461,7 +462,10 @@ class ExternalAuthenticator extends Authenticator {
     * @return boolean Valid client or not
     */
    public static function getValidClient($sourceid) {
-       return self::$authsources["$sourceid"]['valid_client'];
+       if (isset(self::$authsources["$sourceid"]) && isset(self::$authsources["$sourceid"]['valid_client'])) {
+       	   return self::$authsources["$sourceid"]['valid_client'];
+       }
+       return '';
    }
    
    
