@@ -193,12 +193,21 @@ class AuthPasswordReset extends Controller {
 			return;
 		}
 		// are we changing the password
-		// no validation is performed here
-		if (isset($data['NewPassword1']) && isset($data['NewPassword2'])) {
+		// validation is performed here as it is external authentication will be hard to validate if the password is valid
+		if (isset($data['NewPassword1'])) {
 
 			$password = $data['NewPassword1'];
-			$confirmPassword = $data['NewPassword2'];
+			$confirmPassword = (isset($data['NewPassword2']) ? $data['NewPassword2'] : '';
 			if (($password == $confirmPassword) && (isset($member) && is_object($member))) {
+				if ($password != $confirmPassword) {
+					$this->clearMessage();
+					$this->sessionMessage(
+						_t('Member.ERRORNEWPASSWORD', "You have entered your new password differently, try again"),
+						"bad");
+
+					// redirect back to the form, instead of using redirectBack() which could send the user elsewhere.
+					$this->controller->redirect($this->controller->Link('changepassword'));
+				}
 				$member->setAuthenticator();
 				$auth = $member->getAuthenticator();
 				$auth->login();
@@ -223,6 +232,14 @@ class AuthPasswordReset extends Controller {
 					$formMessage = 'Details were saved and password has been changed.';
 				}
 			}
+		} else {
+			$this->clearMessage();
+			$this->sessionMessage(
+				_t('Member.EMPTYNEWPASSWORD', "The new password can't be empty, please try again"),
+				"bad");
+
+			// redirect back to the form, instead of using redirectBack() which could send the user elsewhere.
+			$this->controller->redirect($this->controller->Link('changepassword'));
 		}
 		Controller::redirect('');
 	}
