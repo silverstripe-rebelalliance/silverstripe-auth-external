@@ -77,6 +77,10 @@ class ExternalLoginForm extends LoginForm {
 						$this
                     ));
                 }           
+		$fields->push(new LiteralField('ResetPassword',
+			'<p id="ForgotPassword"><a href="AuthPasswordReset/lostpassword">'
+			 . _t('ExternalAuthenticator.ForgottenPassword',
+			"I've lost my password") . '</a>'));
             }
             if(!$actions) {
                 $actions = new FieldList(
