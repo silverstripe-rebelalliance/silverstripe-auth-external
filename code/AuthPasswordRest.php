@@ -80,7 +80,6 @@ class AuthPasswordReset extends Controller {
 
 		if($member) {
 			$token = $member->generateAutologinTokenAndStoreHash();
-			$passwordResetLink = Security::getPasswordResetLink($member, $token);
 
 			$e = Member_ForgotPasswordEmail::create();
 			$e->populateTemplate($member);
@@ -94,7 +93,7 @@ class AuthPasswordReset extends Controller {
 		} elseif($data['Email']) {
 			// Avoid information disclosure by displaying the same status,
 			// regardless wether the email address actually exists
-			$this->controller->redirect('Security/passwordsent/' . urlencode($data['Email']));
+			Controller::redirect('Security/passwordsent/' . urlencode($data['Email']));
 		} else {
 			$this->sessionMessage(
 				_t('Member.ENTEREMAIL', 'Please enter an email address to get a password reset link.'),
@@ -161,7 +160,7 @@ class AuthPasswordReset extends Controller {
 	}
 
 	public function ChangePasswordForm($token, $member = '') {
-		$memberID = (isset($memebr->ID)) ? $memebr->ID : 0;
+		$memberID = (isset($member->ID)) ? $member->ID : 0;
 		if(isset($_REQUEST['BackURL'])) {
 			$backURL = $_REQUEST['BackURL'];
 		} else {
@@ -180,9 +179,11 @@ class AuthPasswordReset extends Controller {
 		return new Form($this, 'ChangePasswordForm', $fields, $actions);
 	}
 
-	public function doChangePassword($data) {
-		if(isset($data['token']) && $token = $data['token']) {
-			$member = Member::member_from_autologinhash($token, true);
+	public function doChangePassword($data, $form) {
+		if(isset($data['token'])) {
+			$member = Member::member_from_autologinhash(Session::get('AutoLoginHash'));
+			Session::clear('AutoLoginHash');
+			$token = $member->validateAutoLoginToken($data['token']);
 			Session::set('AutoLoginHash', $token);
 		}
 
@@ -192,21 +193,32 @@ class AuthPasswordReset extends Controller {
 			$this->controller->redirect('loginpage');
 			return;
 		}
+		$member->logIn();
 		// are we changing the password
 		// validation is performed here as it is external authentication will be hard to validate if the password is valid
 		if (isset($data['NewPassword1'])) {
 
 			$password = $data['NewPassword1'];
-			$confirmPassword = (isset($data['NewPassword2']) ? $data['NewPassword2'] : '';
+			$confirmPassword = (isset($data['NewPassword2'])) ? $data['NewPassword2'] : '';
 			if (($password == $confirmPassword) && (isset($member) && is_object($member))) {
+				$isInvalid = $this->extend('CheckPasswordValid', $password);
+				if ($isInvalid) {
+					$form->clearMessage();
+					$form->sessionMessage(
+						$isInvalid[0],
+						"bad");
+
+					// redirect back to the form, instead of using redirectBack() which could send the user elsewhere.
+					$this->redirectBack();
+				}
 				if ($password != $confirmPassword) {
-					$this->clearMessage();
-					$this->sessionMessage(
+					$form->clearMessage();
+					$form->sessionMessage(
 						_t('Member.ERRORNEWPASSWORD', "You have entered your new password differently, try again"),
 						"bad");
 
 					// redirect back to the form, instead of using redirectBack() which could send the user elsewhere.
-					$this->controller->redirect($this->controller->Link('changepassword'));
+					$this->redirectBack();
 				}
 				$member->setAuthenticator();
 				$auth = $member->getAuthenticator();
@@ -221,25 +233,23 @@ class AuthPasswordReset extends Controller {
 				$passwordChange["unicodePwd"] = $newPassword;
 				$result = ldap_mod_replace($ldap, $member->External_DN, $passwordChange);
 				if (!$result) {
+					$form->clearMessage();
 					$form->sessionMessage(
 						'Could not change password.',
 						'bad'
 					);
-					//Error changing password
-					//SS_Log::log(new Exception(print_r('could NOT change the password',
-						 //true)), SS_Log::NOTICE);
+					$this->redirectBack();
 				} else {
 					$formMessage = 'Details were saved and password has been changed.';
 				}
 			}
 		} else {
-			$this->clearMessage();
-			$this->sessionMessage(
+			$form->clearMessage();
+			$form->sessionMessage(
 				_t('Member.EMPTYNEWPASSWORD', "The new password can't be empty, please try again"),
 				"bad");
 
-			// redirect back to the form, instead of using redirectBack() which could send the user elsewhere.
-			$this->controller->redirect($this->controller->Link('changepassword'));
+			$this->redirectBack();
 		}
 		Controller::redirect('');
 	}

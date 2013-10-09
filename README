@@ -58,6 +58,28 @@ the ISP's IMAP/POP3 server to validate your logon. Other users at the ISP
 cannot login when you do that because the accounts also need to be registered
 within SilverStripe.
 
+Password Reset
+-----------------------------------------------
+A experimental password reset has been added which has only been tested with active directory so far.
+It adds a forgotten password link similar to the standard Silverstripe forgotten password functionality.
+To add validation to see if a password is strong enough create a data extension class with the function
+checkPasswordValid which checks the password and returns null if it is valid or the error message if it
+invalid as per the example below as per the example below
+
+<?php
+
+class AuthPasswordValid extends DataExtension {
+	public function checkPasswordValid($password) {
+		if(!preg_match('/^(([a-zA-Z]+\d+)|(\d+[a-zA-Z]+))[a-zA-Z0-9]*$/',$password)) {
+			return (string)'Passwords must have at least one digit and one alphanumeric character';
+		}
+		return null;
+	}
+}
+
+
+Object::add_extension('AuthPasswordReset', 'YourPasswordValidationClass');
+
 
 Known issues
 -----------------------------------------------
